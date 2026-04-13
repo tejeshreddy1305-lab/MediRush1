@@ -1,0 +1,12 @@
+fastapi
+uvicorn[standard]
+sqlalchemy
+python-jose[cryptography]
+passlib[bcrypt]
+httpx
+python-multipart
+pydantic
+scikit-learn
+joblib
+pandas
+python-dotenv

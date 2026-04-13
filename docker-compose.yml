@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+      - medirush-db:/app/data
+    env_file:
+      - .env
+    environment:
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  patient-app:
+    build:
+      context: ./patient-app
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./patient-app:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped
+    env_file:
+      - .env
+
+  hospital-dashboard:
+    build:
+      context: ./hospital-dashboard
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./hospital-dashboard:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+    restart: unless-stopped
+    env_file:
+      - .env
+
+volumes:
+  medirush-db:
